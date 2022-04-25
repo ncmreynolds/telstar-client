@@ -78,7 +78,10 @@ void endPage()
     {
       switch (uint8_t(tcpBuffer[i])) {
         case 0x0a:
-          endLine();
+          lineFeed();
+        break;
+        case 0x0b:
+          Serial.print("[UP]");
         break;
         case 0x0c:
           clearScreen();
@@ -91,6 +94,9 @@ void endPage()
           changeColour(tcpBuffer[++i]);
           currentColumn++;
         break;
+        case 0x1e:
+          Serial.print("[HOME]");
+        break;
         default:
           lineBuffer[lineBufferPosition++] = ' ';
           Serial.printf("[%02x]",uint8_t(tcpBuffer[i]));
@@ -100,12 +106,12 @@ void endPage()
     }
     if(currentColumn == columns)
     {
-      endLine();
+      lineFeed();
     }
   }
   if(lineBufferPosition > 0)
   {
-    endLine();
+    lineFeed();
   }
   graphics.end();
   currentRow = 0;
@@ -116,7 +122,7 @@ void carriageReturn()
   currentColumn = 0;
   Serial.print("[CR]");
 }
-void endLine()
+void lineFeed()
 {
   currentColumn = 0;
   lineBuffer[lineBufferPosition] = char(0);

@@ -10,12 +10,13 @@
  * #define TCP_SERVER_PORT 6502 or whatever port the server uses
  * 
  */
-#define ESP_BOILERPLATE
-#include "credentials.h"
+#define USE_ESP_BOILERPLATE
+//#define USE_PAL
 /*
  * WiFi
  */
-#ifdef ESP_BOILERPLATE
+#include "credentials.h"
+#ifdef USE_ESP_BOILERPLATE
   #include <espBoilerplate.h>
 #else
   #include "WiFi.h"
@@ -33,10 +34,11 @@ bool pageEnded = false;
 //Graphics using the fixed resolution for the color graphics
 CompositeGraphics graphics(CompositeColorOutput::XRES, CompositeColorOutput::YRES);
 //Composite output using the desired mode (PAL/NTSC) and a fixed resolution
-CompositeColorOutput composite(CompositeColorOutput::NTSC);
-//CompositeColorOutput composite(CompositeColorOutput::PAL);
-//image and font from the included headers created by the converter. Each iamge uses its own namespace.
-//Image<CompositeGraphics> luni0(luni::xres, luni::yres, luni::pixels);
+#ifdef USE_PAL
+  CompositeColorOutput composite(CompositeColorOutput::PAL);
+#else
+  CompositeColorOutput composite(CompositeColorOutput::NTSC);
+#endif
 //font is based on ASCII starting from char 32 (space), width end height of the monospace characters.
 //All characters are staored in an image vertically. Value 0 is background.
 Font<CompositeGraphics> font(6, 8, font6x8::pixels);
@@ -84,7 +86,7 @@ void setup()
   //select font
   graphics.setFont(font);
   Serial.printf("Graphics resolution(x/y): %u/%u\r\n", graphics.xres, graphics.yres);
-  #ifdef ESP_BOILERPLATE
+  #ifdef USE_ESP_BOILERPLATE
     espBoilerplate.setRetries(60);                          //Optionally, increase retries on the connection to 60s. Default is 30s.
     espBoilerplate.setOutputStream(Serial);
     connectedOk = espBoilerplate.begin(WIFI_SSID,WIFI_PSK); //Connect to the Wi-Fi SSID WIFI_SSID with pre-shared key WIFI_PSK, return is true if succesful
