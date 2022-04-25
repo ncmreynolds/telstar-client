@@ -162,13 +162,61 @@ void changeColour(char colour)
       Serial.print("[WHITE]");
     break;
     case 'H':
-      Serial.print("[BLINK]");
+      Serial.print("[FLASH]");
     break;
     case 'I':
-      Serial.print("[NO BLINK]");
+      Serial.print("[STEADY]");
+    break;
+    case 'L':
+      Serial.print("[NORMAL HEIGHT]");
+    break;
+    case 'M':
+      Serial.print("[DOUBLE HEIGHT]");
+    break;
+    case 'Q':
+      Serial.print("[G RED]");
+    break;
+    case 'R':
+      Serial.print("[G GREEN]");
+    break;
+    case 'S':
+      Serial.print("[G YELLOW]");
+    break;
+    case 'T':
+      Serial.print("[G BLUE]");
+    break;
+    case 'U':
+      Serial.print("[G MAGENTA]");
+    break;
+    case 'V':
+      Serial.print("[G CYAN]");
+    break;
+    case 'W':
+      Serial.print("[G WHITE]");
+    break;
+    case 'X':
+      Serial.print("[CONCEAL]");
+    break;
+    case 'Y':
+      Serial.print("[CONTIG GRAPHICS]");
+    break;
+    case 'Z':
+      Serial.print("[SEPARATED GRAPHICS]");
+    break;
+    case '[':
+      Serial.print("[BACK]");
+    break;
+    case '\\':
+      Serial.print("[BLACK BACKGROUND]");
     break;
     case ']':
-      Serial.print("[BACKGROUND]");
+      Serial.print("[NEW BACKGROUND]");
+    break;
+    case '^':
+      Serial.print("[HOLD GRAPHICS]");
+    break;
+    case '_':
+      Serial.print("[RELEASE GRAPHICS]");
     break;
     default:
       Serial.printf("[Colour:%c]",colour);

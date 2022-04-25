@@ -19,6 +19,7 @@ void onData(void *arg, AsyncClient *client, void *data, size_t len)
     bufferPosition += len;
     if(tcpBuffer[bufferPosition - 1] == 0x47 && tcpBuffer[bufferPosition - 2] == 0x1b)  //ESC 0x47 signifies end of page
     {
+      bufferPosition-=2;  //Strip the page end marker
       pageEnded = true;
     }
   }
