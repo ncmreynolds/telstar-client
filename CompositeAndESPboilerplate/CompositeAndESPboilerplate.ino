@@ -1,5 +1,14 @@
 /*
  * Configuration
+ * 
+ * Put the following in credentials.h in the sketch directory
+ * 
+ * #define WIFI_SSID "YOUR SSID"
+ * #define WIFI_PSK "YOUR PSK"
+ * 
+ * #define TCP_SERVER "glasstty.com" or whatever server you are using
+ * #define TCP_SERVER_PORT 6502 or whatever port the server uses
+ * 
  */
 #define ESP_BOILERPLATE
 #include "credentials.h"
@@ -41,6 +50,7 @@ bool tcpConnected = false;
 /*
  * Videotex rendering
  */
+bool fast = true;
 const uint8_t rows = 25;
 const uint8_t columns = 40;
 uint16_t bufferPosition = 0;

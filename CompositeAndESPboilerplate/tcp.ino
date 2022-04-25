@@ -8,13 +8,19 @@ void onData(void *arg, AsyncClient *client, void *data, size_t len)
   {
     pageTimer = millis();
   }
-  Serial.printf("Data (%03u bytes) received from %s: ", len, client->remoteIP().toString().c_str());
+  if(fast == false)
+  {
+    Serial.printf("Data (%03u bytes) received from %s: ", len, client->remoteIP().toString().c_str());
+  }
   if(len < (bufferSize) - bufferPosition)
   {
     memcpy(tcpBuffer + bufferPosition, data, len);
-    for(uint16_t i = 0; i < len; i++)
+    if(fast == false)
     {
-      Serial.printf("%02x ",uint8_t(tcpBuffer[bufferPosition + i]));
+      for(uint16_t i = 0; i < len; i++)
+      {
+        Serial.printf("%02x ",uint8_t(tcpBuffer[bufferPosition + i]));
+      }
     }
     bufferPosition += len;
     if(tcpBuffer[bufferPosition - 1] == 0x47 && tcpBuffer[bufferPosition - 2] == 0x1b)  //ESC 0x47 signifies end of page
@@ -27,15 +33,20 @@ void onData(void *arg, AsyncClient *client, void *data, size_t len)
   {
     Serial.println("Data too long for TCP buffer page");
   }
-  Serial.println();
+  if(fast == false)
+  {
+    Serial.println();
+  }
 }
 
 void onConnect(void *arg, AsyncClient *client)
 {
-  Serial.printf("Client has connected to %s on port %d \n", TCP_SERVER, TCP_SERVER_PORT);
+  Serial.printf("Client has connected to %s on port %d\n", TCP_SERVER, TCP_SERVER_PORT);
   tcpConnected = true;
-  requestTelstarFullSpeed(client);
-  //httpGet(client);
+  if(fast)
+  {
+    requestTelstarFullSpeed(client);
+  }
 }
 
 void onDisconnect(void *arg, AsyncClient *client)
@@ -100,7 +111,6 @@ void sendSerialToServer(void *arg)
     Serial.printf("Unable to send serialBuffer[%i] to server, disconnected\r\n", bufferLength);
   }
 }
-
 void requestTelstarFullSpeed(void *arg)
 {
   AsyncClient *client = reinterpret_cast<AsyncClient *>(arg);
@@ -111,18 +121,3 @@ void requestTelstarFullSpeed(void *arg)
     client->send();
   }
 }
-/*
-void httpGet(void *arg)
-{
-  AsyncClient *client = reinterpret_cast<AsyncClient *>(arg);
-  //our big json string test
-  //String jsonString = "{\"data_from_module_type\":1,\"hub_unique_id\":\"hub-bfd\",\"slave_unique_id\":\"water-sensor-ba9\",\"water_sensor\":{\"unique_id\":\"water-sensor-ba9\",\"firmware\":\"0.0.1\",\"hub_unique_id\":\"hub-bfd\",\"ip_address\":\"192.168.4.2\",\"mdns\":\"water-sensor-ba9.local\",\"pair_status\":254,\"ec\":{\"value\":0,\"calib_launch\":0,\"sensor_k_origin\":1,\"sensor_k_calibration\":1,\"calibration_solution\":1,\"regulation_state\":1,\"max_pumps_durations\":5000,\"set_point\":200},\"ph\":{\"value\":0,\"calib_launch\":0,\"regulation_state\":1,\"max_pumps_durations\":5000,\"set_point\":700},\"water\":{\"temperature\":0,\"pump_enable\":false}}}";
-  // send reply
-  String jsonString = "GET / HTTP/1.0\r\n\r\n";
-  if (client->space() > strlen(jsonString.c_str()) && client->canSend())
-  {
-    client->add(jsonString.c_str(), strlen(jsonString.c_str()));
-    client->send();
-  }
-}
-*/
