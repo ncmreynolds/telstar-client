@@ -34,8 +34,9 @@ A usable Videotex client running on ESP32, connecting over Wi-Fi, outputting com
 - Should work with any classic ESP32 (not S1/S2/C3) development board
 - Use Arduino IDE 1.8.x, not tested with 2.0.x. It may be worth a separate 'portable' installation because of the next requirement
 - Install Espressif systems Arduino core v2.0.1 **other versions do not currently work** as the composite video output is a horrible hack and other versions may crash the board, refuse to set the I2S clock or just not work. Downgrade if necessary.
-- Install [this composite video library](https://github.com/marciot/ESP32CompositeColorVideo) from [marciot](https://github.com/marciot).
-- Install [my espBoilerplate library](https://github.com/ncmreynolds/espBoilerplate) for managing the Wi-Fi connection. You can easily remove this requirement from the code by commenting out line 13, there's some standard Wi-Fi connection code as well.
+- Install the [composite video library](https://github.com/marciot/ESP32CompositeColorVideo) from [marciot](https://github.com/marciot).
+- Install the [ESP32 Async TCP](https://github.com/me-no-dev/AsyncTCP/blob/master/src/AsyncTCP.h) library from [me-no-dev](https://github.com/me-no-dev).
+- Install my [espBoilerplate library](https://github.com/ncmreynolds/espBoilerplate) for managing the Wi-Fi connection. You can easily remove this requirement from the code by commenting out line 13, there's some standard Wi-Fi connection code as well.
 
 ## Connecting the composite video
 
