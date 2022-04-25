@@ -4,7 +4,7 @@ void draw()
   graphics.setHue(0);
   graphics.begin(0);
   //drawing an image
-  luni0.draw(graphics, 200, 10);
+  //luni0.draw(graphics, 200, 10);
 
   // Cycle the hue used for drawing
   graphics.setHue(millis()/1000);
@@ -45,6 +45,7 @@ void draw()
 void startPage()
 {
   bufferPosition = 0;
+  lineBufferPosition = 0;
   Serial.println("Page starts...");
   graphics.begin(0);
   graphics.setHue(0);
@@ -60,25 +61,39 @@ void endPage()
   currentColumn = 0;
   for(uint16_t i = 0; i < bufferPosition; i++)
   {
-    if(uint8_t(textToRender[i]) > 31 && uint8_t(textToRender[i]) < 127)
+    if(uint8_t(tcpBuffer[i]) > 31 && uint8_t(tcpBuffer[i]) < 127)
     {
-      lineBuffer[lineBufferPosition++] = textToRender[i];
+      if(tcpBuffer[i] == '_')
+      {
+        lineBuffer[lineBufferPosition++] = '#';
+      }
+      else
+      {
+        lineBuffer[lineBufferPosition++] = tcpBuffer[i];
+      }
+      Serial.print(tcpBuffer[i]);
       currentColumn++;
     }
     else
     {
-      switch (uint8_t(textToRender[i])) {
+      switch (uint8_t(tcpBuffer[i])) {
         case 0x0a:
           endLine();
         break;
+        case 0x0c:
+          clearScreen();
+        break;
+        case 0x0d:
+          carriageReturn();
+        break;
         case 0x1b:
           lineBuffer[lineBufferPosition++] = ' ';
-          changeColour(uint8_t(textToRender[++i]));
+          changeColour(tcpBuffer[++i]);
           currentColumn++;
         break;
         default:
           lineBuffer[lineBufferPosition++] = ' ';
-          //Serial.printf("[%02x]",uint8_t(textToRender[i]));
+          Serial.printf("[%02x]",uint8_t(tcpBuffer[i]));
           currentColumn++;
         break;
       }
@@ -88,11 +103,19 @@ void endPage()
       endLine();
     }
   }
+  if(lineBufferPosition > 0)
+  {
+    endLine();
+  }
   graphics.end();
   currentRow = 0;
   currentColumn = 0;
 }
-
+void carriageReturn()
+{
+  currentColumn = 0;
+  Serial.print("[CR]");
+}
 void endLine()
 {
   currentColumn = 0;
@@ -100,24 +123,67 @@ void endLine()
   if(currentRow < rows)
   {
     currentRow++;
-    Serial.println(lineBuffer);
+    Serial.println("[LF]");
   }
   else
   {
-    Serial.print(lineBuffer);
+    //Serial.print("[LF]");
   }
   graphics.setCursor(0, currentRow * 8);
   graphics.print(lineBuffer);
   lineBufferPosition = 0;
 }
 
-void changeColour(uint8_t colour)
+void changeColour(char colour)
 {
+  //graphics.setTextColor(5);
+  //graphics.setHue(hue);
+  switch (colour)
+  {
+    case 'A':
+      Serial.print("[RED]");
+    break;
+    case 'B':
+      Serial.print("[GREEN]");
+    break;
+    case 'C':
+      Serial.print("[YELLOW]");
+    break;
+    case 'D':
+      Serial.print("[BLUE]");
+    break;
+    case 'E':
+      Serial.print("[MAGENTA]");
+    break;
+    case 'F':
+      Serial.print("[CYAN]");
+    break;
+    case 'G':
+      Serial.print("[WHITE]");
+    break;
+    case 'H':
+      Serial.print("[BLINK]");
+    break;
+    case 'I':
+      Serial.print("[NO BLINK]");
+    break;
+    case ']':
+      Serial.print("[BACKGROUND]");
+    break;
+    default:
+      Serial.printf("[Colour:%c]",colour);
+    break;
+  }
 }
 
 void clearScreen()
 {
+  Serial.println("Clear screen");
+  lineBufferPosition = 0;
   graphics.setHue(0);
   graphics.begin(0);
   graphics.end();
+  currentColumn = 0;
+  currentRow = 0;
+  graphics.setCursor(0, 0);
 }

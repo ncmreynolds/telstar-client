@@ -12,6 +12,7 @@
   #include "WiFi.h"
 #endif
 bool connectedOk = false;
+bool pageEnded = false;
 /*
  * Composite video essentials
  */
@@ -19,7 +20,6 @@ bool connectedOk = false;
 #include "CompositeGraphics.h"
 #include "Image.h"
 #include "CompositeColorOutput.h"
-#include "luni.h"
 #include "font6x8.h"
 //Graphics using the fixed resolution for the color graphics
 CompositeGraphics graphics(CompositeColorOutput::XRES, CompositeColorOutput::YRES);
@@ -27,7 +27,7 @@ CompositeGraphics graphics(CompositeColorOutput::XRES, CompositeColorOutput::YRE
 CompositeColorOutput composite(CompositeColorOutput::NTSC);
 //CompositeColorOutput composite(CompositeColorOutput::PAL);
 //image and font from the included headers created by the converter. Each iamge uses its own namespace.
-Image<CompositeGraphics> luni0(luni::xres, luni::yres, luni::pixels);
+//Image<CompositeGraphics> luni0(luni::xres, luni::yres, luni::pixels);
 //font is based on ASCII starting from char 32 (space), width end height of the monospace characters.
 //All characters are staored in an image vertically. Value 0 is background.
 Font<CompositeGraphics> font(6, 8, font6x8::pixels);
@@ -44,7 +44,8 @@ bool tcpConnected = false;
 const uint8_t rows = 25;
 const uint8_t columns = 40;
 uint16_t bufferPosition = 0;
-char textToRender[rows * columns];
+const uint16_t bufferSize = 2048;
+char tcpBuffer[bufferSize];
 uint8_t currentRow = 0;
 uint8_t currentColumn = 0;
 const uint8_t lineBufferSize = 64;
@@ -134,6 +135,12 @@ void loop()
   if(pageTimer > 0 && millis() - pageTimer > pageTimeout)
   {
     pageTimer = 0;
+    endPage();  //Display the page
+  }
+  else if(pageEnded == true)
+  {
+    pageTimer = 0;
+    pageEnded = false;
     endPage();  //Display the page
   }
 }

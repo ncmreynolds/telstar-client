@@ -9,34 +9,22 @@ void onData(void *arg, AsyncClient *client, void *data, size_t len)
     pageTimer = millis();
   }
   Serial.printf("Data (%03u bytes) received from %s: ", len, client->remoteIP().toString().c_str());
-  if(len < (rows * columns) - bufferPosition)
+  if(len < (bufferSize) - bufferPosition)
   {
-    memcpy(textToRender + bufferPosition, data, len);
+    memcpy(tcpBuffer + bufferPosition, data, len);
     for(uint16_t i = 0; i < len; i++)
     {
-      Serial.printf("%02x ",uint8_t(textToRender[bufferPosition + i]));
+      Serial.printf("%02x ",uint8_t(tcpBuffer[bufferPosition + i]));
     }
     bufferPosition += len;
-    /*for(uint16_t i = 0; i < len; i++)
+    if(tcpBuffer[bufferPosition - 1] == 0x47 && tcpBuffer[bufferPosition - 2] == 0x1b)  //ESC 0x47 signifies end of page
     {
-      if(uint8_t(data[i]) > 31 && uint8_t(data[i]) < 127)
-      {
-        textToRender[bufferPosition] = data[i];
-        Serial.write(data[i]);
-      }
-      else
-      {
-        textToRender[bufferPosition] = char(32);
-        Serial.write(' ');
-      }
-      bufferPosition++;
+      pageEnded = true;
     }
-    */
   }
   else
   {
-    Serial.println("Data too long for videotex page");
-    //Serial.write((uint8_t *)data, len);
+    Serial.println("Data too long for TCP buffer page");
   }
   Serial.println();
 }
@@ -45,7 +33,7 @@ void onConnect(void *arg, AsyncClient *client)
 {
   Serial.printf("Client has connected to %s on port %d \n", TCP_SERVER, TCP_SERVER_PORT);
   tcpConnected = true;
-  //requestTelstarFullSpeed(client);
+  requestTelstarFullSpeed(client);
   //httpGet(client);
 }
 
