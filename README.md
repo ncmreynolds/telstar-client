@@ -1,6 +1,8 @@
 # ESP32 Telstar client
 A minimal Videotex client for connecting to [Telstar](https://glasstty.com/).
 
+![](welcome.jpg)
+
 ## Aspiration
 
 A usable Videotex client running on ESP32, connecting over Wi-Fi, outputting composite video and controlled with a 3x4 matrix keypad for 'embedded' installation using an old TV etc. as a screen.
